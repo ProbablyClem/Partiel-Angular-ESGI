@@ -1,4 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { StatistiqueBack } from './models/apiTypes';
 import { Statistique } from './models/Statistique';
 
 @Injectable({
@@ -6,16 +8,16 @@ import { Statistique } from './models/Statistique';
 })
 export class StatistiquesService {
 
-  stats: Statistique[] = [{ id: "12345", titre: "stat1", valeur: "10%" }, { id: "67891", titre: "stat2", valeur: "20%" }]
+  stats: Statistique[] = []
 
-  constructor() {
-    setTimeout(() => {
-      this.stats.push({
-        id: "162738",
-        titre: "stat3",
-        valeur: "30%"
-      });
-    }, 3000);
+  constructor(private http: HttpClient) {
+    http.get("https://stats.naminilamy.fr/").subscribe(res => {
+      for (let s of res as StatistiqueBack[]) {
+        this.stats?.push({ id: s.id, titre: s.title, valeur: s.value });
+      }
+    }, err => {
+      console.log(err);
+    });
   }
 
   deleteItem(statistique: Statistique) {
