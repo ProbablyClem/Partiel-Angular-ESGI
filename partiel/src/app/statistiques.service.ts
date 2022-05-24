@@ -11,13 +11,7 @@ export class StatistiquesService {
   stats: Statistique[] = []
 
   constructor(private http: HttpClient) {
-    http.get("https://stats.naminilamy.fr/").subscribe(res => {
-      for (let s of res as StatistiqueBack[]) {
-        this.stats.push({ id: s.id, titre: s.title, valeur: s.value });
-      }
-    }, err => {
-      console.log(err);
-    });
+    this.getStats()
   }
 
   deleteItem(statistique: Statistique) {
@@ -27,8 +21,23 @@ export class StatistiquesService {
     }
   }
 
+  getStats() {
+    this.stats = []
+    this.http.get("https://stats.naminilamy.fr/").subscribe(res => {
+      for (let s of res as StatistiqueBack[]) {
+        this.stats.push({ id: s.id, titre: s.title, valeur: s.value });
+      }
+    }, err => {
+      console.log(err);
+    });
+  }
+
   addStat(statistique: Statistique) {
     this.stats.push(statistique)
-    console.log(this.stats)
+    this.http.post("https://stats.naminilamy.fr/", { title: statistique.titre, value: statistique.valeur }).subscribe(res => {
+      this.getStats()
+    }, err => {
+      console.log(err);
+    });
   }
 }
