@@ -16,10 +16,11 @@ export class StatistiquesService {
   }
 
   deleteItem(statistique: Statistique) {
-    const index = this.stats.indexOf(statistique);
-    if (index > -1) {
-      this.stats.splice(index, 1); // 2nd parameter means remove one item only
-    }
+    this.http.delete("https://stats.naminilamy.fr/" + statistique.id).subscribe(res => {
+      this.getStats()
+    }, err => {
+      console.log(err);
+    });
   }
 
   getStats() {
@@ -34,7 +35,6 @@ export class StatistiquesService {
   }
 
   addStat(statistique: Statistique) {
-    this.stats.push(statistique)
     this.http.post("https://stats.naminilamy.fr/", { title: statistique.titre, value: statistique.valeur }).subscribe(res => {
       this.getStats()
     }, err => {
@@ -45,7 +45,10 @@ export class StatistiquesService {
   connectToWs() {
     webSocket("wss://ac88n1oa17.execute-api.eu-west-3.amazonaws.com/dev").subscribe((msg: any) => {
       let stat: StatistiqueBack = msg.object
-      this.stats.push({ id: stat.id, titre: stat.title, valeur: stat.value });
+      const found = this.stats.find(element => element.id == stat.id);
+      if (!found) {
+        this.stats.push({ id: stat.id, titre: stat.title, valeur: stat.value });
+      }
     }, err => console.log(err), () => {
       console.log("Websocket disconnected, retry");
       this.connectToWs()
