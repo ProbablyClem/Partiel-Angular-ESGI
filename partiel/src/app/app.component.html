@@ -1,3 +1,4 @@
-<app-statistique [stat]="stat1"></app-statistique>
----------------------------------
-<app-statistique [stat]="stat2"></app-statistique>
+<div *ngFor="let stat of stats">
+  <app-statistique [stat]="stat"></app-statistique>
+  -------------------------------
+</div>

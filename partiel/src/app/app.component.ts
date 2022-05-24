@@ -9,6 +9,15 @@ import { Statistique } from './models/Statistique';
 export class AppComponent {
   title = 'partiel';
 
-  stat1: Statistique = { id: "12345", titre: "stat1", valeur: "10%" }
-  stat2: Statistique = { id: "67891", titre: "stat2", valeur: "20%" }
+  stats: Statistique[] = [{ id: "12345", titre: "stat1", valeur: "10%" }, { id: "67891", titre: "stat2", valeur: "20%" }]
+
+  constructor() {
+    setTimeout(() => {
+      this.stats.push({
+        id: "162738",
+        titre: "stat3",
+        valeur: "30%"
+      });
+    }, 3000);
+  }
 }
