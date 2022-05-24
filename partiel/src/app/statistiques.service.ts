@@ -17,4 +17,11 @@ export class StatistiquesService {
       });
     }, 3000);
   }
+
+  deleteItem(statistique: Statistique) {
+    const index = this.stats.indexOf(statistique);
+    if (index > -1) {
+      this.stats.splice(index, 1); // 2nd parameter means remove one item only
+    }
+  }
 }

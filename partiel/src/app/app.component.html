@@ -1,4 +1,4 @@
 <div *ngFor="let stat of statitisquesService.stats">
-  <app-statistique [stat]="stat"></app-statistique>
+  <app-statistique (deleteRequest)="statitisquesService.deleteItem($event)" [stat]="stat"></app-statistique>
   -------------------------------
 </div>
