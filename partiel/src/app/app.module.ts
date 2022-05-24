@@ -8,6 +8,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { ListeComponent } from './liste/liste.component';
 import { CreateComponent } from './create/create.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
+import { StatistiquesService } from './statistiques.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -19,9 +21,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [StatistiquesService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

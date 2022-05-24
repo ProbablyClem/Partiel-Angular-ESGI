@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Statistique } from '../models/Statistique';
+import { StatistiquesService } from '../statistiques.service';
 
 @Component({
   selector: 'app-create',
@@ -7,9 +10,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateComponent implements OnInit {
 
-  constructor() { }
+  id!: string
+  titre!: string
+  valeur!: string
+
+  constructor(protected statistiqueService: StatistiquesService) {
+  }
 
   ngOnInit(): void {
   }
 
+  ajouterStat(form: NgForm) {
+    this.statistiqueService.addStat({ id: this.id, titre: this.titre, valeur: this.valeur })
+    form.reset()
+  }
 }

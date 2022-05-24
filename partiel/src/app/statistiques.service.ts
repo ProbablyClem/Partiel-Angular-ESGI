@@ -13,7 +13,7 @@ export class StatistiquesService {
   constructor(private http: HttpClient) {
     http.get("https://stats.naminilamy.fr/").subscribe(res => {
       for (let s of res as StatistiqueBack[]) {
-        this.stats?.push({ id: s.id, titre: s.title, valeur: s.value });
+        this.stats.push({ id: s.id, titre: s.title, valeur: s.value });
       }
     }, err => {
       console.log(err);
@@ -25,5 +25,10 @@ export class StatistiquesService {
     if (index > -1) {
       this.stats.splice(index, 1); // 2nd parameter means remove one item only
     }
+  }
+
+  addStat(statistique: Statistique) {
+    this.stats.push(statistique)
+    console.log(this.stats)
   }
 }

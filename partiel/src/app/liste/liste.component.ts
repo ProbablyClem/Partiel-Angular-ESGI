@@ -9,7 +9,6 @@ import { StatistiquesService } from '../statistiques.service';
 export class ListeComponent implements OnInit {
 
   constructor(public statitisquesService: StatistiquesService) {
-
   }
 
   ngOnInit(): void {
