@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { StatistiqueBack } from './models/apiTypes';
 import { Statistique } from './models/Statistique';
-
+import { webSocket } from 'rxjs/webSocket'
 @Injectable({
   providedIn: 'root'
 })
@@ -12,6 +12,7 @@ export class StatistiquesService {
 
   constructor(private http: HttpClient) {
     this.getStats()
+    this.connectToWs()
   }
 
   deleteItem(statistique: Statistique) {
@@ -39,5 +40,15 @@ export class StatistiquesService {
     }, err => {
       console.log(err);
     });
+  }
+
+  connectToWs() {
+    webSocket("wss://ac88n1oa17.execute-api.eu-west-3.amazonaws.com/dev").subscribe((msg: any) => {
+      let stat: StatistiqueBack = msg.object
+      this.stats.push({ id: stat.id, titre: stat.title, valeur: stat.value });
+    }, err => console.log(err), () => {
+      console.log("Websocket disconnected, retry");
+      this.connectToWs()
+    })
   }
 }
