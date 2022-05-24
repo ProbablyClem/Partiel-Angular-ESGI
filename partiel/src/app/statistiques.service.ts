@@ -7,7 +7,8 @@ import { webSocket } from 'rxjs/webSocket'
   providedIn: 'root'
 })
 export class StatistiquesService {
-
+  URL_API: string = "https://stats.naminilamy.fr/"
+  URL_WS: string = "wss://ac88n1oa17.execute-api.eu-west-3.amazonaws.com/dev"
   stats: Statistique[] = []
 
   constructor(private http: HttpClient) {
@@ -16,7 +17,7 @@ export class StatistiquesService {
   }
 
   deleteItem(statistique: Statistique) {
-    this.http.delete("https://stats.naminilamy.fr/" + statistique.id).subscribe(res => {
+    this.http.delete(this.URL_API + statistique.id).subscribe(res => {
       this.getStats()
     }, err => {
       console.log(err);
@@ -25,9 +26,9 @@ export class StatistiquesService {
 
   getStats() {
     this.stats = []
-    this.http.get("https://stats.naminilamy.fr/").subscribe(res => {
+    this.http.get(this.URL_API).subscribe(res => {
       for (let s of res as StatistiqueBack[]) {
-        this.stats.push({ id: s.id, titre: s.title, valeur: s.value });
+        this.addElement(s)
       }
     }, err => {
       console.log(err);
@@ -35,23 +36,44 @@ export class StatistiquesService {
   }
 
   addStat(statistique: Statistique) {
-    this.http.post("https://stats.naminilamy.fr/", { title: statistique.titre, value: statistique.valeur }).subscribe(res => {
-      this.getStats()
-    }, err => {
-      console.log(err);
-    });
+    const found = this.stats.find(element => element.id == statistique.id); //On regarde si l'élément existe deja
+    if (!found) { //Si il n'existe pas on le créer
+      this.http.post(this.URL_API, { title: statistique.titre, value: statistique.valeur }).subscribe(res => {
+        this.getStats()
+      }, err => {
+        console.log(err);
+      });
+    }
+    else { //Sinon on l'update
+      this.http.put(this.URL_API + statistique.id, { title: statistique.titre, value: statistique.valeur }).subscribe(res => {
+        this.getStats()
+      }, err => {
+        console.log(err);
+      });
+    }
   }
 
   connectToWs() {
-    webSocket("wss://ac88n1oa17.execute-api.eu-west-3.amazonaws.com/dev").subscribe((msg: any) => {
+    webSocket(this.URL_WS).subscribe((msg: any) => {
       let stat: StatistiqueBack = msg.object
-      const found = this.stats.find(element => element.id == stat.id);
-      if (!found) {
-        this.stats.push({ id: stat.id, titre: stat.title, valeur: stat.value });
+      if (msg.type == "DELETED_DATA") {
+        this.getStats()
+      } else {
+        this.addElement(stat)
       }
     }, err => console.log(err), () => {
       console.log("Websocket disconnected, retry");
       this.connectToWs()
     })
+  }
+
+  private addElement(stat: StatistiqueBack) {
+    const found = this.stats.find(element => element.id == stat.id);
+    if (!found) {
+      this.stats.push({ id: stat.id, titre: stat.title, valeur: stat.value });
+    } else {
+      found.titre = stat.title
+      found.valeur = stat.value
+    }
   }
 }
